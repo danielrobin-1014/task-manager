@@ -5,9 +5,13 @@
 import "dotenv/config";
 import express, { Request, Response } from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { connectDatabase } from "./config/database";
 import { requestLogger } from "./middleware/logger";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
+import authRoutes from "./routes/authRoutes";
+import taskRoutes from "./routes/taskRoutes";
+import { swaggerDocument } from "./config/swagger";
 
 const app = express();
 
@@ -26,9 +30,19 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
+// Swagger documentation
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Routes will be added here
+app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+
 app.get("/api", (_req: Request, res: Response) => {
-  res.json({ message: "Task Management API" });
+  res.json({ 
+    message: "Task Management API",
+    documentation: "/api/docs",
+    version: "1.0.0"
+  });
 });
 
 // Error handling

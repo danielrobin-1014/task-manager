@@ -25,9 +25,17 @@ export interface IJWTPayload {
   email: string;
 }
 
+export interface IUserResponse {
+  _id?: string;
+  email: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  [key: string]: unknown;
+}
+
 export interface IAuthResponse {
   token: string;
-  user: Omit<IUser, "password">;
+  user: IUserResponse;
 }
 
 export interface IErrorResponse {

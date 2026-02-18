@@ -84,6 +84,30 @@ backend/
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
 
+## API Documentation (Swagger)
+
+Interactive API documentation is available at:
+
+```
+http://localhost:5000/api/docs
+```
+
+The Swagger UI provides:
+- Complete endpoint documentation
+- Request/response schemas
+- Authentication testing with JWT tokens
+- Try-it-out functionality for all endpoints
+
+### Using Swagger UI
+
+1. Start the server: `npm run dev`
+2. Open browser to `http://localhost:5000/api/docs`
+3. For protected endpoints:
+   - First call `/api/auth/login` to get a token
+   - Click "Authorize" button at the top
+   - Enter: `Bearer <your_token>`
+   - Now you can test protected endpoints
+
 ## Environment Variables
 
 ```env

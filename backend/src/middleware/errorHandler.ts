@@ -2,14 +2,13 @@
  * Global error handler middleware
  */
 
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { AppError } from "../utils/errors";
 
 export const errorHandler = (
   err: Error | AppError,
   _req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ): void => {
   console.error("Error:", err);
 
