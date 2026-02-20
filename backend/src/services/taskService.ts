@@ -30,11 +30,52 @@ export const createTask = async (
 };
 
 /**
- * Get all tasks for a user
+ * Get all tasks for a user with filtering, sorting, and pagination
  */
-export const getUserTasks = async (userId: string): Promise<ITaskDocument[]> => {
-  const tasks = await Task.find({ userId }).sort({ createdAt: -1 });
-  return tasks;
+export const getUserTasks = async (
+  userId: string,
+  options?: {
+    status?: "pending" | "completed";
+    sortBy?: "createdAt" | "updatedAt" | "title";
+    sortOrder?: "asc" | "desc";
+    page?: number;
+    limit?: number;
+  }
+): Promise<{ tasks: ITaskDocument[]; total: number; page: number; totalPages: number }> => {
+  const {
+    status,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+    page = 1,
+    limit = 100,
+  } = options || {};
+
+  // Build query
+  const query: Record<string, unknown> = { userId };
+  if (status) {
+    query.status = status;
+  }
+
+  // Build sort object
+  const sortObj: Record<string, 1 | -1> = {
+    [sortBy]: sortOrder === "asc" ? 1 : -1,
+  };
+
+  // Calculate pagination
+  const skip = (page - 1) * limit;
+
+  // Execute query
+  const [tasks, total] = await Promise.all([
+    Task.find(query).sort(sortObj).skip(skip).limit(limit),
+    Task.countDocuments(query),
+  ]);
+
+  return {
+    tasks,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 /**

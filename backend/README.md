@@ -79,10 +79,47 @@ backend/
 
 ### Tasks
 - `POST /api/tasks` - Create task
-- `GET /api/tasks` - Get all user tasks
+- `GET /api/tasks` - Get all user tasks (with filtering, sorting, pagination)
 - `GET /api/tasks/:id` - Get single task
 - `PUT /api/tasks/:id` - Update task
 - `DELETE /api/tasks/:id` - Delete task
+
+### Query Parameters (GET /api/tasks)
+The tasks endpoint supports advanced filtering, sorting, and pagination:
+
+**Filtering:**
+- `?status=pending` - Get only pending tasks
+- `?status=completed` - Get only completed tasks
+
+**Sorting:**
+- `?sortBy=createdAt` - Sort by creation date (default)
+- `?sortBy=updatedAt` - Sort by last update
+- `?sortBy=title` - Sort alphabetically
+- `?sortOrder=asc` - Ascending order
+- `?sortOrder=desc` - Descending order (default)
+
+**Pagination:**
+- `?page=1` - Page number (default: 1)
+- `?limit=10` - Tasks per page (default: 100, max: 100)
+
+**Example:**
+```
+GET /api/tasks?status=pending&sortBy=createdAt&sortOrder=desc&page=1&limit=10
+```
+
+**Response Format:**
+```json
+{
+  "success": true,
+  "message": "Tasks fetched successfully",
+  "data": {
+    "tasks": [...],
+    "total": 25,
+    "page": 1,
+    "totalPages": 3
+  }
+}
+```
 
 ## API Documentation (Swagger)
 

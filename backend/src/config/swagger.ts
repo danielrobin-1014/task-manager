@@ -232,9 +232,20 @@ export const swaggerDocument = {
                   $ref: "#/components/schemas/Task",
                 },
               },
-              count: {
+              total: {
                 type: "number",
-                example: 10,
+                example: 25,
+                description: "Total number of tasks matching the query",
+              },
+              page: {
+                type: "number",
+                example: 1,
+                description: "Current page number",
+              },
+              totalPages: {
+                type: "number",
+                example: 3,
+                description: "Total number of pages",
               },
             },
           },
@@ -446,10 +457,67 @@ export const swaggerDocument = {
       get: {
         tags: ["Tasks"],
         summary: "Get all tasks",
-        description: "Get all tasks for the authenticated user",
+        description: "Get all tasks for the authenticated user with filtering, sorting, and pagination",
         security: [
           {
             bearerAuth: [],
+          },
+        ],
+        parameters: [
+          {
+            name: "status",
+            in: "query",
+            description: "Filter by task status",
+            required: false,
+            schema: {
+              type: "string",
+              enum: ["pending", "completed"],
+            },
+          },
+          {
+            name: "sortBy",
+            in: "query",
+            description: "Sort by field",
+            required: false,
+            schema: {
+              type: "string",
+              enum: ["createdAt", "updatedAt", "title"],
+              default: "createdAt",
+            },
+          },
+          {
+            name: "sortOrder",
+            in: "query",
+            description: "Sort order",
+            required: false,
+            schema: {
+              type: "string",
+              enum: ["asc", "desc"],
+              default: "desc",
+            },
+          },
+          {
+            name: "page",
+            in: "query",
+            description: "Page number",
+            required: false,
+            schema: {
+              type: "integer",
+              minimum: 1,
+              default: 1,
+            },
+          },
+          {
+            name: "limit",
+            in: "query",
+            description: "Number of tasks per page",
+            required: false,
+            schema: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 100,
+            },
           },
         ],
         responses: {

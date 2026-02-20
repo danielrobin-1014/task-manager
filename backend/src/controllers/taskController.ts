@@ -42,7 +42,7 @@ export const create = async (
 
 /**
  * Get all tasks for authenticated user
- * GET /api/tasks
+ * GET /api/tasks?status=pending&sortBy=createdAt&sortOrder=desc&page=1&limit=10
  */
 export const getAll = async (
   req: Request,
@@ -54,12 +54,22 @@ export const getAll = async (
       throw new AppError("User not authenticated", 401);
     }
 
-    const tasks = await getUserTasks(req.user.userId);
+    const { status, sortBy, sortOrder, page, limit } = req.query;
+
+    const options = {
+      status: status as "pending" | "completed" | undefined,
+      sortBy: sortBy as "createdAt" | "updatedAt" | "title" | undefined,
+      sortOrder: sortOrder as "asc" | "desc" | undefined,
+      page: page ? parseInt(page as string, 10) : undefined,
+      limit: limit ? parseInt(limit as string, 10) : undefined,
+    };
+
+    const result = await getUserTasks(req.user.userId, options);
 
     res.status(200).json({
       success: true,
       message: "Tasks fetched successfully",
-      data: { tasks, count: tasks.length },
+      data: result,
     });
   } catch (error) {
     next(error);
