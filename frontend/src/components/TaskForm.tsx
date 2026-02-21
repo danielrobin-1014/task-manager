@@ -14,9 +14,6 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
   const [status, setStatus] = useState<"pending" | "completed">(task?.status || "pending");
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
-  const MAX_TITLE_LENGTH = 100;
-  const MAX_DESC_LENGTH = 500;
-
   useEffect(() => {
     if (task) {
       setTitle(task.title);
@@ -30,12 +27,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
 
     if (!title.trim()) {
       newErrors.title = "Title is required";
-    } else if (title.length > MAX_TITLE_LENGTH) {
-      newErrors.title = `Title must be less than ${MAX_TITLE_LENGTH} characters`;
+    } else if (title.length > 100) {
+      newErrors.title = "Title must be less than 100 characters";
     }
 
-    if (description && description.length > MAX_DESC_LENGTH) {
-      newErrors.description = `Description must be less than ${MAX_DESC_LENGTH} characters`;
+    if (description && description.length > 500) {
+      newErrors.description = "Description must be less than 500 characters";
     }
 
     setErrors(newErrors);
@@ -57,118 +54,78 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 animate-fadeIn" style={{ animationDelay: '50ms' }}>
-
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* Title Field */}
-      <div className="group">
-        <div className="flex justify-between items-end mb-1.5">
-          <label htmlFor="title" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Task Title <span className="text-rose-500">*</span>
-          </label>
-          <span className={`text-xs font-medium ${title.length > MAX_TITLE_LENGTH ? 'text-rose-500' : 'text-slate-400 dark:text-slate-500'}`}>
-            {title.length}/{MAX_TITLE_LENGTH}
-          </span>
-        </div>
-        <div className="relative">
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={`w-full px-4 py-3 rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-base transition-all duration-200 outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 hover:bg-white dark:hover:bg-slate-900 shadow-sm ${errors.title ? "border-rose-400 dark:border-rose-500 focus:ring-rose-500/50 focus:border-rose-500" : "border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
-              }`}
-            placeholder="What needs to be done?"
-            disabled={loading}
-            autoFocus
-          />
-        </div>
-        {errors.title && <p className="mt-1.5 text-sm text-rose-500 dark:text-rose-400 font-medium animate-slideUp">{errors.title}</p>}
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          Task Title <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white ${
+            errors.title ? "border-red-400" : "border-slate-300 dark:border-slate-600"
+          }`}
+          placeholder="Enter task title"
+          disabled={loading}
+        />
+        {errors.title && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>}
       </div>
 
       {/* Description Field */}
-      <div className="group">
-        <div className="flex justify-between items-end mb-1.5">
-          <label htmlFor="description" className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-            Description <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
-          </label>
-          <span className={`text-xs font-medium ${description.length > MAX_DESC_LENGTH ? 'text-rose-500' : 'text-slate-400 dark:text-slate-500'}`}>
-            {description.length}/{MAX_DESC_LENGTH}
-          </span>
-        </div>
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          Description
+        </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className={`w-full px-4 py-3 rounded-xl border bg-slate-50/50 dark:bg-slate-900/50 text-slate-900 dark:text-white text-base transition-all duration-200 outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 hover:bg-white dark:hover:bg-slate-900 resize-none shadow-sm ${errors.description ? "border-rose-400 dark:border-rose-500 focus:ring-rose-500/50 focus:border-rose-500" : "border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600"
-            }`}
-          placeholder="Add details, links, or context to help complete this task..."
+          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none bg-white dark:bg-slate-900 dark:text-white ${
+            errors.description ? "border-red-400" : "border-slate-300 dark:border-slate-600"
+          }`}
+          placeholder="Enter task description (optional)"
           disabled={loading}
         />
-        {errors.description && <p className="mt-1.5 text-sm text-rose-500 dark:text-rose-400 font-medium animate-slideUp">{errors.description}</p>}
+        {errors.description && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>}
       </div>
 
-      {/* Status Segmented Control */}
+      {/* Status Field */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+        <label htmlFor="status" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Status
         </label>
-        <div className="flex p-1 bg-slate-100 dark:bg-slate-900/80 rounded-xl relative border border-slate-200/50 dark:border-slate-700/50">
-          <button
-            type="button"
-            onClick={() => setStatus("pending")}
-            disabled={loading}
-            className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-300 flex items-center justify-center gap-2 ${status === "pending" ? "text-slate-800 dark:text-slate-100" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              }`}
-          >
-            <span className={`w-2 h-2 rounded-full transition-colors duration-300 ${status === "pending" ? "bg-violet-500" : "bg-slate-300 dark:bg-slate-600"}`}></span>
-            To Do
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setStatus("completed")}
-            disabled={loading}
-            className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-300 flex items-center justify-center gap-2 ${status === "completed" ? "text-slate-800 dark:text-slate-100" : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              }`}
-          >
-            <span className={`w-2 h-2 rounded-full transition-colors duration-300 ${status === "completed" ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`}></span>
-            Completed
-          </button>
-
-          {/* Sliding indicator */}
-          <div
-            className="absolute top-1 bottom-1 w-1/2 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200/50 dark:border-slate-700/50 transition-all duration-300 ease-spring"
-            style={{
-              left: status === 'pending' ? '0.25rem' : 'calc(50% - 0.25rem)',
-              width: 'calc(50% - 0.125rem)'
-            }}
-          ></div>
-        </div>
+        <select
+          id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value as "pending" | "completed")}
+          className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+          disabled={loading}
+        >
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+        </select>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-end gap-3 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700/80">
+      <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
         <button
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-xl transition-all duration-200 disabled:opacity-50"
+          className="px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-200 disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 active:scale-[0.98] rounded-xl transition-all duration-200 disabled:opacity-50 shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 flex items-center gap-2"
+          className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] rounded-lg transition-all duration-200 disabled:opacity-50 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
         >
-          {loading && (
-            <svg className="animate-spin -ml-1 h-4 w-4 text-white" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          )}
-          {loading ? "Saving..." : task ? "Save Changes" : "Create Task"}
+          {loading ? "Saving..." : task ? "Update Task" : "Create Task"}
         </button>
       </div>
     </form>

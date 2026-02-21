@@ -16,8 +16,10 @@ import { swaggerDocument } from "./config/swagger";
 const app = express();
 
 // Middleware
+// Remove trailing slash from CORS origin to prevent mismatch
+const corsOrigin = (process.env.CORS_ORIGIN || "http://localhost:3000").replace(/\/$/, "");
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  origin: corsOrigin,
   credentials: true,
 }));
 

@@ -28,32 +28,23 @@ function App() {
             <Toaster
               position="top-right"
               toastOptions={{
-                duration: 4000,
-                // Global styles matching the new design system
+                duration: 3000,
                 style: {
-                  background: 'var(--tw-colors-slate-800)',
-                  color: '#fff',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                  borderRadius: '1rem',
-                  padding: '16px 20px',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  border: '1px solid var(--tw-colors-slate-700)',
-                  backdropFilter: 'blur(12px)',
+                  background: "#363636",
+                  color: "#fff",
                 },
-                className: 'dark:bg-slate-800/90 dark:text-white bg-white/90 text-slate-800 border dark:border-slate-700 border-slate-200 backdrop-blur-md',
                 success: {
-                  duration: 4000,
+                  duration: 3000,
                   iconTheme: {
-                    primary: '#10B981', // Emerald 500
-                    secondary: '#fff',
+                    primary: "#10B981",
+                    secondary: "#fff",
                   },
                 },
                 error: {
-                  duration: 5000,
+                  duration: 4000,
                   iconTheme: {
-                    primary: '#F43F5E', // Rose 500
-                    secondary: '#fff',
+                    primary: "#EF4444",
+                    secondary: "#fff",
                   },
                 },
               }}
