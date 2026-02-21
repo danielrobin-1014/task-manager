@@ -5,13 +5,17 @@ export const taskService = {
   // Get all tasks for logged-in user with optional filters
   getTasks: async (filters?: {
     status?: "pending" | "completed";
-    sortBy?: "createdAt" | "updatedAt" | "title";
+    priority?: "low" | "medium" | "high";
+    category?: string;
+    sortBy?: "createdAt" | "updatedAt" | "title" | "priority" | "dueDate";
     sortOrder?: "asc" | "desc";
     page?: number;
     limit?: number;
   }): Promise<{ tasks: ITask[]; total: number; page: number; totalPages: number }> => {
     const params = new URLSearchParams();
     if (filters?.status) params.append("status", filters.status);
+    if (filters?.priority) params.append("priority", filters.priority);
+    if (filters?.category) params.append("category", filters.category);
     if (filters?.sortBy) params.append("sortBy", filters.sortBy);
     if (filters?.sortOrder) params.append("sortOrder", filters.sortOrder);
     if (filters?.page) params.append("page", filters.page.toString());

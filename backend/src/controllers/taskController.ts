@@ -27,8 +27,15 @@ export const create = async (
       throw new AppError("User not authenticated", 401);
     }
 
-    const { title, description } = req.body;
-    const task = await createTask(req.user.userId, title, description);
+    const { title, description, priority, category, dueDate } = req.body;
+    const task = await createTask(
+      req.user.userId, 
+      title, 
+      description,
+      priority,
+      category,
+      dueDate ? new Date(dueDate) : undefined
+    );
 
     res.status(201).json({
       success: true,
@@ -54,11 +61,13 @@ export const getAll = async (
       throw new AppError("User not authenticated", 401);
     }
 
-    const { status, sortBy, sortOrder, page, limit } = req.query;
+    const { status, priority, category, sortBy, sortOrder, page, limit } = req.query;
 
     const options = {
       status: status as "pending" | "completed" | undefined,
-      sortBy: sortBy as "createdAt" | "updatedAt" | "title" | undefined,
+      priority: priority as "low" | "medium" | "high" | undefined,
+      category: category as string | undefined,
+      sortBy: sortBy as "createdAt" | "updatedAt" | "title" | "priority" | "dueDate" | undefined,
       sortOrder: sortOrder as "asc" | "desc" | undefined,
       page: page ? parseInt(page as string, 10) : undefined,
       limit: limit ? parseInt(limit as string, 10) : undefined,
@@ -118,12 +127,15 @@ export const update = async (
     }
 
     const { id } = req.params;
-    const { title, description, status } = req.body;
+    const { title, description, status, priority, category, dueDate } = req.body;
 
     const task = await updateTask(id, req.user.userId, {
       title,
       description,
       status,
+      priority,
+      category,
+      dueDate: dueDate === null || dueDate === "" ? null : (dueDate ? new Date(dueDate) : undefined),
     });
 
     res.status(200).json({

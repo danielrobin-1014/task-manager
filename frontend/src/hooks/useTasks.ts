@@ -7,7 +7,9 @@ export const taskKeys = {
   all: ["tasks"] as const,
   list: (filters?: {
     status?: "pending" | "completed";
-    sortBy?: "createdAt" | "updatedAt" | "title";
+    priority?: "low" | "medium" | "high";
+    category?: string;
+    sortBy?: "createdAt" | "updatedAt" | "title" | "priority" | "dueDate";
     sortOrder?: "asc" | "desc";
     page?: number;
     limit?: number;
@@ -18,7 +20,9 @@ export const taskKeys = {
 // Fetch all tasks with optional filters
 export const useTasks = (filters?: {
   status?: "pending" | "completed";
-  sortBy?: "createdAt" | "updatedAt" | "title";
+  priority?: "low" | "medium" | "high";
+  category?: string;
+  sortBy?: "createdAt" | "updatedAt" | "title" | "priority" | "dueDate";
   sortOrder?: "asc" | "desc";
   page?: number;
   limit?: number;
@@ -26,6 +30,7 @@ export const useTasks = (filters?: {
   return useQuery({
     queryKey: taskKeys.list(filters),
     queryFn: () => taskService.getTasks(filters),
+    staleTime: 0, // Always refetch on mount
   });
 };
 
@@ -44,9 +49,9 @@ export const useCreateTask = () => {
 
   return useMutation({
     mutationFn: (data: ICreateTaskRequest) => taskService.createTask(data),
-    onSettled: () => {
-      // Invalidate all task queries to refetch with updated data
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    onSuccess: () => {
+      // Invalidate and refetch all task queries immediately
+      queryClient.invalidateQueries({ queryKey: ["tasks"], refetchType: "all" });
     },
   });
 };
@@ -58,8 +63,8 @@ export const useUpdateTask = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: IUpdateTaskRequest }) =>
       taskService.updateTask(id, data),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"], refetchType: "all" });
     },
   });
 };
@@ -70,8 +75,8 @@ export const useDeleteTask = () => {
 
   return useMutation({
     mutationFn: (id: string) => taskService.deleteTask(id),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"], refetchType: "all" });
     },
   });
 };

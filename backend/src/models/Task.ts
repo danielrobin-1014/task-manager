@@ -8,6 +8,9 @@ export interface ITaskDocument extends Document {
   title: string;
   description: string;
   status: "pending" | "completed";
+  priority: "low" | "medium" | "high";
+  category: string[];
+  dueDate?: Date;
   userId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +35,25 @@ const taskSchema = new Schema<ITaskDocument>(
       enum: ["pending", "completed"],
       default: "pending",
     },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high"],
+      default: "medium",
+    },
+    category: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function(arr: string[]) {
+          return arr.length <= 10; // Max 10 categories per task
+        },
+        message: "Cannot have more than 10 categories",
+      },
+    },
+    dueDate: {
+      type: Date,
+      required: false,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -47,5 +69,7 @@ const taskSchema = new Schema<ITaskDocument>(
 // Index for efficient querying by user and status
 taskSchema.index({ userId: 1, status: 1 });
 taskSchema.index({ userId: 1, createdAt: -1 });
+taskSchema.index({ userId: 1, priority: 1 });
+taskSchema.index({ userId: 1, dueDate: 1 });
 
 export const Task = mongoose.model<ITaskDocument>("Task", taskSchema);

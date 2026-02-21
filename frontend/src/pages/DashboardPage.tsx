@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import TaskList from "../components/TaskList";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
 import { useTasks, useCreateTask, useUpdateTask, useDeleteTask } from "../hooks/useTasks";
+import { useTaskReminders } from "../hooks/useTaskReminders";
 import type { ITask, ICreateTaskRequest } from "../types";
 
 type FilterTab = "all" | "pending" | "completed";
@@ -15,11 +16,15 @@ const DashboardPage: React.FC = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterTab>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<"low" | "medium" | "high" | "all">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
 
-  // Fetch tasks based on active filter
-  const { data, isLoading } = useTasks(
-    activeFilter !== "all" ? { status: activeFilter } : undefined
-  );
+  // Fetch tasks based on active filters
+  const { data, isLoading } = useTasks({
+    status: activeFilter !== "all" ? activeFilter : undefined,
+    priority: priorityFilter !== "all" ? priorityFilter : undefined,
+    category: categoryFilter || undefined,
+  });
 
   const tasks = data?.tasks || [];
   const createTask = useCreateTask();
@@ -30,6 +35,20 @@ const DashboardPage: React.FC = () => {
   const { data: allData } = useTasks();
   const { data: pendingData } = useTasks({ status: "pending" });
   const { data: completedData } = useTasks({ status: "completed" });
+
+  // Get all unique categories from ALL tasks (not filtered)
+  const allCategories = Array.from(
+    new Set((allData?.tasks || []).flatMap(task => task.category || []))
+  ).sort();
+
+  // Debug: Log categories for troubleshooting
+  useEffect(() => {
+    console.log("All tasks:", allData?.tasks);
+    console.log("Extracted categories:", allCategories);
+  }, [allData, allCategories]);
+
+  // Enable reminder notifications for tasks with due dates
+  useTaskReminders(tasks);
 
   const handleCreateTask = () => {
     setEditingTask(undefined);
@@ -147,63 +166,109 @@ const DashboardPage: React.FC = () => {
 
         {/* Filters and Search */}
         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-5 mb-6 transition-colors shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {/* Filter Tabs */}
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setActiveFilter("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeFilter === "all"
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                }`}
-              >
-                All Tasks
-              </button>
-              <button
-                onClick={() => setActiveFilter("pending")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeFilter === "pending"
-                    ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                }`}
-              >
-                Pending
-              </button>
-              <button
-                onClick={() => setActiveFilter("completed")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeFilter === "completed"
-                    ? "bg-green-600 text-white shadow-lg shadow-green-500/30"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                }`}
-              >
-                Completed
-              </button>
+          {/* Status Filter Tabs */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setActiveFilter("all")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeFilter === "all"
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  All Tasks
+                </button>
+                <button
+                  onClick={() => setActiveFilter("pending")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeFilter === "pending"
+                      ? "bg-amber-600 text-white shadow-lg shadow-amber-500/30"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  ⏳ Pending
+                </button>
+                <button
+                  onClick={() => setActiveFilter("completed")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeFilter === "completed"
+                      ? "bg-green-600 text-white shadow-lg shadow-green-500/30"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  ✅ Completed
+                </button>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative group">
+                <input
+                  type="text"
+                  placeholder="Search tasks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full sm:w-72 px-4 py-2.5 pl-10 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-sm shadow-sm"
+                />
+                <svg
+                  className="absolute left-3 top-3 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="relative group">
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-72 px-4 py-2.5 pl-10 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-sm shadow-sm"
-              />
-              <svg
-                className="absolute left-3 top-3 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* Additional Filters */}
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Filters:</span>
+              
+              {/* Priority Filter */}
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value as "low" | "medium" | "high" | "all")}
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+                <option value="all">All Priorities</option>
+                <option value="high">🔴 High Priority</option>
+                <option value="medium">🟡 Medium Priority</option>
+                <option value="low">🟢 Low Priority</option>
+              </select>
+
+              {/* Category Filter */}
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+                disabled={allCategories.length === 0}
+              >
+                <option value="">All Categories</option>
+                {allCategories.map((cat) => (
+                  <option key={cat} value={cat}>#{cat}</option>
+                ))}
+              </select>
+
+              {/* Clear Filters Button */}
+              {(priorityFilter !== "all" || categoryFilter || searchQuery) && (
+                <button
+                  onClick={() => {
+                    setPriorityFilter("all");
+                    setCategoryFilter("");
+                    setSearchQuery("");
+                  }}
+                  className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                >
+                  Clear Filters
+                </button>
+              )}
             </div>
           </div>
         </div>

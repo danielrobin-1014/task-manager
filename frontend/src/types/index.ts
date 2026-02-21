@@ -10,6 +10,9 @@ export interface ITask {
   title: string;
   description?: string;
   status: "pending" | "completed";
+  priority: "low" | "medium" | "high";
+  category: string[];
+  dueDate?: string;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -34,10 +37,16 @@ export interface ICreateTaskRequest {
   title: string;
   description?: string;
   status?: "pending" | "completed";
+  priority?: "low" | "medium" | "high";
+  category?: string[];
+  dueDate?: string;
 }
 
 export interface IUpdateTaskRequest {
   title?: string;
   description?: string;
   status?: "pending" | "completed";
+  priority?: "low" | "medium" | "high";
+  category?: string[];
+  dueDate?: string | null;
 }

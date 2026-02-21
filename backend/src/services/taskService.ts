@@ -12,7 +12,10 @@ import { ValidationError, NotFoundError, AuthorizationError } from "../utils/err
 export const createTask = async (
   userId: string,
   title: string,
-  description: string
+  description: string,
+  priority?: "low" | "medium" | "high",
+  category?: string[],
+  dueDate?: Date
 ): Promise<ITaskDocument> => {
   if (!title) {
     throw new ValidationError("Title is required");
@@ -23,6 +26,9 @@ export const createTask = async (
     description: description || "",
     userId,
     status: "pending",
+    priority: priority || "medium",
+    category: category || [],
+    dueDate: dueDate || undefined,
   });
 
   await task.save();
@@ -36,7 +42,9 @@ export const getUserTasks = async (
   userId: string,
   options?: {
     status?: "pending" | "completed";
-    sortBy?: "createdAt" | "updatedAt" | "title";
+    priority?: "low" | "medium" | "high";
+    category?: string;
+    sortBy?: "createdAt" | "updatedAt" | "title" | "priority" | "dueDate";
     sortOrder?: "asc" | "desc";
     page?: number;
     limit?: number;
@@ -44,6 +52,8 @@ export const getUserTasks = async (
 ): Promise<{ tasks: ITaskDocument[]; total: number; page: number; totalPages: number }> => {
   const {
     status,
+    priority,
+    category,
     sortBy = "createdAt",
     sortOrder = "desc",
     page = 1,
@@ -54,6 +64,13 @@ export const getUserTasks = async (
   const query: Record<string, unknown> = { userId };
   if (status) {
     query.status = status;
+  }
+  if (priority) {
+    query.priority = priority;
+  }
+  if (category) {
+    // Use $in operator to check if category exists in the array
+    query.category = { $in: [category] };
   }
 
   // Build sort object
@@ -102,7 +119,14 @@ export const getTaskById = async (taskId: string, userId: string): Promise<ITask
 export const updateTask = async (
   taskId: string,
   userId: string,
-  updates: { title?: string; description?: string; status?: "pending" | "completed" }
+  updates: { 
+    title?: string; 
+    description?: string; 
+    status?: "pending" | "completed";
+    priority?: "low" | "medium" | "high";
+    category?: string[];
+    dueDate?: Date | null;
+  }
 ): Promise<ITaskDocument> => {
   const task = await Task.findById(taskId);
 
@@ -120,10 +144,20 @@ export const updateTask = async (
     throw new ValidationError("Status must be either 'pending' or 'completed'");
   }
 
+  // Validate priority if provided
+  if (updates.priority && !["low", "medium", "high"].includes(updates.priority)) {
+    throw new ValidationError("Priority must be 'low', 'medium', or 'high'");
+  }
+
   // Update fields
   if (updates.title !== undefined) task.title = updates.title;
   if (updates.description !== undefined) task.description = updates.description;
   if (updates.status !== undefined) task.status = updates.status;
+  if (updates.priority !== undefined) task.priority = updates.priority;
+  if (updates.category !== undefined) task.category = updates.category;
+  if (updates.dueDate !== undefined) {
+    task.dueDate = updates.dueDate === null ? undefined : updates.dueDate;
+  }
 
   await task.save();
   return task;
