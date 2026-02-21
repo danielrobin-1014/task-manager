@@ -14,13 +14,13 @@ export const createTask = async (
   title: string,
   description: string
 ): Promise<ITaskDocument> => {
-  if (!title || !description) {
-    throw new ValidationError("Title and description are required");
+  if (!title) {
+    throw new ValidationError("Title is required");
   }
 
   const task = new Task({
     title,
-    description,
+    description: description || "",
     userId,
     status: "pending",
   });

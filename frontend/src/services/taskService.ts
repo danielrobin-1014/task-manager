@@ -18,30 +18,46 @@ export const taskService = {
     if (filters?.limit) params.append("limit", filters.limit.toString());
 
     const response = await api.get<{
-      tasks: ITask[];
-      total: number;
-      page: number;
-      totalPages: number;
+      success: boolean;
+      message: string;
+      data: {
+        tasks: ITask[];
+        total: number;
+        page: number;
+        totalPages: number;
+      };
     }>(`/tasks?${params.toString()}`);
-    return response.data;
+    return response.data.data;
   },
 
   // Get single task by ID
   getTaskById: async (id: string): Promise<ITask> => {
-    const response = await api.get<{ task: ITask }>(`/tasks/${id}`);
-    return response.data.task;
+    const response = await api.get<{
+      success: boolean;
+      message: string;
+      data: { task: ITask };
+    }>(`/tasks/${id}`);
+    return response.data.data.task;
   },
 
   // Create new task
   createTask: async (taskData: ICreateTaskRequest): Promise<ITask> => {
-    const response = await api.post<{ task: ITask }>("/tasks", taskData);
-    return response.data.task;
+    const response = await api.post<{
+      success: boolean;
+      message: string;
+      data: { task: ITask };
+    }>("/tasks", taskData);
+    return response.data.data.task;
   },
 
   // Update task
   updateTask: async (id: string, taskData: IUpdateTaskRequest): Promise<ITask> => {
-    const response = await api.put<{ task: ITask }>(`/tasks/${id}`, taskData);
-    return response.data.task;
+    const response = await api.put<{
+      success: boolean;
+      message: string;
+      data: { task: ITask };
+    }>(`/tasks/${id}`, taskData);
+    return response.data.data.task;
   },
 
   // Delete task

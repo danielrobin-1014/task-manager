@@ -1,7 +1,8 @@
 export interface IUser {
   _id: string;
-  name: string;
   email: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ITask {
@@ -25,7 +26,6 @@ export interface ILoginRequest {
 }
 
 export interface IRegisterRequest {
-  name: string;
   email: string;
   password: string;
 }

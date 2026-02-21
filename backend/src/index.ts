@@ -38,7 +38,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
 app.get("/api", (_req: Request, res: Response) => {
-  res.json({ 
+  res.json({
     message: "Task Management API",
     documentation: "/api/docs",
     version: "1.0.0"
@@ -66,4 +66,11 @@ const startServer = async (): Promise<void> => {
   }
 };
 
-startServer();
+if (process.env.NODE_ENV !== "production" && process.env.VERCEL !== "1") {
+  startServer();
+} else {
+  // In serverless environments like Vercel, simply connect the DB
+  connectDatabase().catch(console.error);
+}
+
+export default app;
