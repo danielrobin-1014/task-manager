@@ -262,11 +262,19 @@ const RegisterPage: React.FC = () => {
           </div>
 
           {/* Login Link */}
-          <div className="text-center">
+          <div className="text-center space-y-3">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{" "}
               <Link to="/login" className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                 Sign in instead
+              </Link>
+            </p>
+            <p className="text-sm">
+              <Link to="/" className="text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Home
               </Link>
             </p>
           </div>
