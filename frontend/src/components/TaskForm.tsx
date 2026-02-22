@@ -112,7 +112,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white ${
+          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white ${
             errors.title ? "border-red-400" : "border-slate-300 dark:border-slate-600"
           }`}
           placeholder="Enter task title"
@@ -131,7 +131,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition resize-none bg-white dark:bg-slate-900 dark:text-white ${
+          className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition resize-none bg-white dark:bg-slate-900 dark:text-white ${
             errors.description ? "border-red-400" : "border-slate-300 dark:border-slate-600"
           }`}
           placeholder="Enter task description (optional)"
@@ -150,11 +150,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
             id="status"
             value={status}
             onChange={(e) => setStatus(e.target.value as "pending" | "completed")}
-            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
             disabled={loading}
           >
-            <option value="pending">⏳ Pending</option>
-            <option value="completed">✅ Completed</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
           </select>
         </div>
 
@@ -167,12 +167,12 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
             id="priority"
             value={priority}
             onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
-            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+            className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
             disabled={loading}
           >
-            <option value="low">🟢 Low</option>
-            <option value="medium">🟡 Medium</option>
-            <option value="high">🔴 High</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
           </select>
         </div>
       </div>
@@ -180,7 +180,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
      {/* Due Date Field */}
       <div>
         <label htmlFor="dueDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          📅 Due Date & Time (Optional)
+          Due Date & Time (Optional)
         </label>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -192,28 +192,28 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
               id="dueDate"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
               disabled={loading}
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
           <div>
             <label htmlFor="dueTime" className="block text-xs text-slate-600 dark:text-slate-400 mb-1">
-              ⏰ Time
+              Time
             </label>
             <input
               type="time"
               id="dueTime"
               value={dueTime}
               onChange={(e) => setDueTime(e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
               disabled={loading || !dueDate}
             />
           </div>
         </div>
         {dueDate && dueTime && (
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            ⏱️ Reminder set for: {new Date(`${dueDate}T${dueTime}`).toLocaleString()}
+            Reminder set for: {new Date(`${dueDate}T${dueTime}`).toLocaleString()}
           </p>
         )}
       </div>
@@ -230,7 +230,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
             value={categoryInput}
             onChange={(e) => setCategoryInput(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+            className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
             placeholder="Add category (e.g., Work, Personal)"
             disabled={loading || category.length >= 10}
             maxLength={50}
@@ -239,7 +239,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
             type="button"
             onClick={handleAddCategory}
             disabled={loading || !categoryInput.trim() || category.length >= 10}
-            className="px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2.5 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add
           </button>
@@ -252,13 +252,13 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
             {category.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-full"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => handleRemoveCategory(tag)}
-                  className="hover:text-indigo-900 dark:hover:text-indigo-100 transition-colors"
+                  className="hover:text-teal-900 dark:hover:text-teal-100 transition-colors"
                   disabled={loading}
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -284,7 +284,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] rounded-lg transition-all duration-200 disabled:opacity-50 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
+          className="px-5 py-2.5 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] rounded-lg transition-all duration-200 disabled:opacity-50 shadow-md hover:shadow-lg"
         >
           {loading ? "Saving..." : task ? "Update Task" : "Create Task"}
         </button>

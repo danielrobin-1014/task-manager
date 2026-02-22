@@ -15,12 +15,12 @@ body {
 /* Base custom properties */
 @layer base {
   :root {
-    --primary: 124 58 237;
-    /* #7C3AED */
-    --primary-dark: 109 40 217;
-    /* #6D28D9 */
-    --accent: 79 70 229;
-    /* #4F46E5 */
+    --primary: 16 185 129;
+    /* #10B981 emerald-500 */
+    --primary-dark: 5 150 105;
+    /* #059669 emerald-600 */
+    --accent: 20 184 166;
+    /* #14B8A6 teal-500 */
   }
 }
 
@@ -35,7 +35,7 @@ body {
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400;
   }
 }
 

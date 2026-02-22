@@ -25,22 +25,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleSta
     }
   };
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case "high": return "🔴";
-      case "medium": return "🟡";
-      case "low": return "🟢";
-      default: return "⚪";
-    }
-  };
-
   const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && isPending;
 
   return (
-    <div className={`group bg-white dark:bg-slate-800 border-l-4 border-t border-r border-b rounded-xl p-5 transition-all duration-200 hover:shadow-xl ${
-      isPending 
-        ? "border-l-amber-500 border-slate-200 dark:border-slate-700 hover:border-amber-200 dark:hover:border-amber-900/50" 
-        : "border-l-green-500 border-slate-200 dark:border-slate-700 hover:border-green-200 dark:hover:border-green-900/50"
+    <div className={`group rounded-xl p-5 transition-all duration-200 hover:shadow-xl ${
+      isOverdue
+        ? "bg-red-50 dark:bg-red-900/10 border-l-4 border-l-red-500 border-t border-r border-b border-red-200 dark:border-red-800 hover:border-red-300 dark:hover:border-red-700"
+        : isPending 
+          ? "bg-white dark:bg-slate-800 border-l-4 border-l-amber-500 border-t border-r border-b border-slate-200 dark:border-slate-700 hover:border-amber-200 dark:hover:border-amber-900/50" 
+          : "bg-white dark:bg-slate-800 border-l-4 border-l-green-500 border-t border-r border-b border-slate-200 dark:border-slate-700 hover:border-green-200 dark:hover:border-green-900/50"
     }`}>
       <div className="flex items-start gap-3">
         {/* Checkbox */}
@@ -53,6 +46,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleSta
 
         {/* Task Content */}
         <div className="flex-1 min-w-0">
+          {/* Overdue Warning Banner */}
+          {isOverdue && (
+            <div className="mb-2 flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 rounded-lg">
+              <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <span className="text-xs font-semibold text-red-700 dark:text-red-400">OVERDUE TASK</span>
+            </div>
+          )}
           <h3
             className={`text-base font-semibold mb-1 ${
               isPending ? "text-slate-900 dark:text-white" : "text-slate-400 dark:text-slate-500 line-through"
@@ -68,17 +70,16 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleSta
           <div className="flex flex-wrap items-center gap-2 mb-2">
             {/* Priority Badge */}
             <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
-              <span>{getPriorityIcon(task.priority)}</span>
-              <span className="capitalize">{task.priority}</span>
+              <span className="capitalize font-semibold">{task.priority}</span>
             </span>
 
             {/* Status Badge */}
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
               isPending 
                 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
                 : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
             }`}>
-              {isPending ? "⏳ Pending" : "✅ Completed"}
+              {isPending ? "Pending" : "Completed"}
             </span>
 
             {/* Due Date Badge */}
@@ -86,7 +87,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleSta
               <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 isOverdue 
                   ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800" 
-                  : "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400"
+                  : "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400"
               }`}>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -111,7 +112,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleSta
                   key={tag}
                   className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
                 >
-                  #{tag}
+                  {tag}
                 </span>
               ))}
             </div>

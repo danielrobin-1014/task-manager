@@ -37,12 +37,11 @@ export const useTaskReminders = (tasks: ITask[]) => {
       if (shownOverdue !== overdueIds) {
         const message =
           overdueTasks.length === 1
-            ? `⚠️ You have 1 overdue task: "${overdueTasks[0].title}"`
-            : `⚠️ You have ${overdueTasks.length} overdue tasks!`;
+            ? `URGENT: 1 overdue task - "${overdueTasks[0].title}"`
+            : `URGENT: ${overdueTasks.length} overdue tasks!`;
 
         toast.error(message, {
-          duration: 6000,
-          icon: "🔔",
+          duration: 8000,
         });
 
         sessionStorage.setItem("shownOverdueReminders", overdueIds);
@@ -57,12 +56,11 @@ export const useTaskReminders = (tasks: ITask[]) => {
       if (shownUpcoming !== upcomingIds) {
         const message =
           upcomingTasks.length === 1
-            ? `📅 Task due soon: "${upcomingTasks[0].title}"`
-            : `📅 You have ${upcomingTasks.length} tasks due within 24 hours!`;
+            ? `Task due soon: "${upcomingTasks[0].title}"`
+            : `${upcomingTasks.length} tasks due within 24 hours`;
 
         toast(message, {
           duration: 5000,
-          icon: "🔔",
           style: {
             background: "#3B82F6",
             color: "#fff",

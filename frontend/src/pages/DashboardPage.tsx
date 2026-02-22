@@ -116,13 +116,42 @@ const DashboardPage: React.FC = () => {
       task.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Calculate success rate
+  const totalTasks = allData?.total || 0;
+  const completedTasks = completedData?.total || 0;
+  const successRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  // Calculate overdue tasks
+  const overdueTasks = (pendingData?.tasks || []).filter(
+    (task) => task.dueDate && new Date(task.dueDate) < new Date()
+  ).length;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 transition-colors">
       <Navbar onCreateTask={handleCreateTask} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Overdue Alert Banner */}
+        {overdueTasks > 0 && (
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-r-lg">
+            <div className="flex items-center gap-3">
+              <svg className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                  {overdueTasks} {overdueTasks === 1 ? 'task is' : 'tasks are'} overdue!
+                </p>
+                <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
+                  Complete or reschedule overdue tasks to stay on track.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/50 rounded-xl p-6 transition-all hover:shadow-lg">
             <div className="flex items-center justify-between">
               <div>
@@ -149,6 +178,19 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
+          <div className="bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900/50 rounded-xl p-6 transition-all hover:shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">Overdue</p>
+                <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">{overdueTasks}</p>
+              </div>
+              <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-xl">
+                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
           <div className="bg-white dark:bg-slate-800 border border-green-200 dark:border-green-900/50 rounded-xl p-6 transition-all hover:shadow-lg">
             <div className="flex items-center justify-between">
               <div>
@@ -158,6 +200,19 @@ const DashboardPage: React.FC = () => {
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-xl">
                 <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-900/50 rounded-xl p-6 transition-all hover:shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">Success Rate</p>
+                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">{successRate}%</p>
+              </div>
+              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-xl">
+                <svg className="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
             </div>
@@ -174,7 +229,7 @@ const DashboardPage: React.FC = () => {
                   onClick={() => setActiveFilter("all")}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     activeFilter === "all"
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                      ? "bg-emerald-600 text-white shadow-md"
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -188,7 +243,7 @@ const DashboardPage: React.FC = () => {
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
-                  ⏳ Pending
+                  Pending
                 </button>
                 <button
                   onClick={() => setActiveFilter("completed")}
@@ -198,7 +253,7 @@ const DashboardPage: React.FC = () => {
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
-                  ✅ Completed
+                  Completed
                 </button>
               </div>
 
@@ -209,10 +264,10 @@ const DashboardPage: React.FC = () => {
                   placeholder="Search tasks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full sm:w-72 px-4 py-2.5 pl-10 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-sm shadow-sm"
+                  className="w-full sm:w-72 px-4 py-2.5 pl-10 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-white rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition text-sm shadow-sm"
                 />
                 <svg
-                  className="absolute left-3 top-3 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition"
+                  className="absolute left-3 top-3 h-5 w-5 text-slate-400 group-focus-within:text-emerald-500 transition"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -235,24 +290,24 @@ const DashboardPage: React.FC = () => {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value as "low" | "medium" | "high" | "all")}
-                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
               >
                 <option value="all">All Priorities</option>
-                <option value="high">🔴 High Priority</option>
-                <option value="medium">🟡 Medium Priority</option>
-                <option value="low">🟢 Low Priority</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
               </select>
 
               {/* Category Filter */}
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+                className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
                 disabled={allCategories.length === 0}
               >
                 <option value="">All Categories</option>
                 {allCategories.map((cat) => (
-                  <option key={cat} value={cat}>#{cat}</option>
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
 
