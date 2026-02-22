@@ -16,6 +16,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
   const [category, setCategory] = useState<string[]>(task?.category || []);
   const [categoryInput, setCategoryInput] = useState("");
   const [dueDate, setDueDate] = useState(task?.dueDate ? task.dueDate.split('T')[0] : "");
+  const [dueTime, setDueTime] = useState(task?.dueDate ? new Date(task.dueDate).toTimeString().slice(0, 5) : "");
   const [errors, setErrors] = useState<{ title?: string; description?: string; category?: string }>({});
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
       setPriority(task.priority);
       setCategory(task.category || []);
       setDueDate(task.dueDate ? task.dueDate.split('T')[0] : "");
+      setDueTime(task.dueDate ? new Date(task.dueDate).toTimeString().slice(0, 5) : "");
     }
   }, [task]);
 
@@ -76,13 +78,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
       return;
     }
 
+    // Combine date and time into ISO datetime string
+    let dueDateTimeString: string | undefined = undefined;
+    if (dueDate) {
+      if (dueTime) {
+        // Combine date and time
+        dueDateTimeString = `${dueDate}T${dueTime}:00.000Z`;
+      } else {
+        // If only date is provided, set time to 23:59
+        dueDateTimeString = `${dueDate}T23:59:00.000Z`;
+      }
+    }
+
     onSubmit({
       title: title.trim(),
       description: description.trim() || undefined,
       status,
       priority,
       category: category.length > 0 ? category : undefined,
-      dueDate: dueDate || undefined,
+      dueDate: dueDateTimeString,
     });
   };
 
@@ -166,17 +180,42 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel, loading }
      {/* Due Date Field */}
       <div>
         <label htmlFor="dueDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-          Due Date (Optional)
+          📅 Due Date & Time (Optional)
         </label>
-        <input
-          type="date"
-          id="dueDate"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
-          disabled={loading}
-          min={new Date().toISOString().split('T')[0]}
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="dueDate" className="block text-xs text-slate-600 dark:text-slate-400 mb-1">
+              Date
+            </label>
+            <input
+              type="date"
+              id="dueDate"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+              disabled={loading}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+          <div>
+            <label htmlFor="dueTime" className="block text-xs text-slate-600 dark:text-slate-400 mb-1">
+              ⏰ Time
+            </label>
+            <input
+              type="time"
+              id="dueTime"
+              value={dueTime}
+              onChange={(e) => setDueTime(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition bg-white dark:bg-slate-900 dark:text-white"
+              disabled={loading || !dueDate}
+            />
+          </div>
+        </div>
+        {dueDate && dueTime && (
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            ⏱️ Reminder set for: {new Date(`${dueDate}T${dueTime}`).toLocaleString()}
+          </p>
+        )}
       </div>
 
       {/* Category/Tags Field */}
